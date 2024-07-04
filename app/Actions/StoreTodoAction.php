@@ -57,11 +57,11 @@ class StoreTodoAction implements Undoable
         return null;
     }
 
-    public function redo(array $event, User $user): ?Todo
+    public function redo(UndoableEvent $event, User $user): ?Todo
     {
         /** @var Todo $todo */
         $todo = Todo::create(
-            json_decode($event['data']['todo']['before'], true),
+            $event->data->todo->before,
         );
 
         $this->redis->lPush('history:todos:' . $todo->id . ':undo:' . $user->id, json_encode([
