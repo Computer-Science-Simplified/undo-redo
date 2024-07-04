@@ -6,4 +6,5 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/todos', [TodoController::class, 'store']);
     Route::patch('/todos/{todo}/description', [TodoController::class, 'updateDescription']);
+    Route::patch('/todos/{todo}/undo', [TodoController::class, 'undo']);
 });

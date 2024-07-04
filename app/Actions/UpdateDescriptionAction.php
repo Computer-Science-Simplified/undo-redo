@@ -20,7 +20,7 @@ class UpdateDescriptionAction
 
         $todo->save();
 
-        $this->redis->rPush('history:todos:' . $user->id, json_encode([
+        $this->redis->lPush('history:todos:' . $todo->id . ':' . $user->id, json_encode([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -30,5 +30,15 @@ class UpdateDescriptionAction
                 ],
             ],
         ]));
+    }
+
+    public function undo(array $event): ?Todo
+    {
+        /** @var Todo $todo */
+        $todo = Todo::findOrFail($event['data']['todo_id']);
+
+        $todo->update(json_decode($event['data']['todo']['before'], true));
+
+        return $todo;
     }
 }

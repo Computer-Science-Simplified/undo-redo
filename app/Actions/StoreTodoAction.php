@@ -19,7 +19,7 @@ class StoreTodoAction
             'user_id' => $user->id,
         ]);
 
-        $this->redis->rPush('history:todos:' . $user->id, json_encode([
+        $this->redis->lPush('history:todos:' . $todo->id . ':' . $user->id, json_encode([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -31,5 +31,15 @@ class StoreTodoAction
         ]));
 
         return $todo;
+    }
+
+    public function undo(array $event): null
+    {
+        /** @var Todo $todo */
+        $todo = Todo::findOrFail($event['data']['todo_id']);
+
+        $todo->delete();
+
+        return null;
     }
 }
