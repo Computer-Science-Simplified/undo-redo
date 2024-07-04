@@ -2,11 +2,11 @@
 
 namespace App\UndoableEvent;
 
-class UndoableEvent
+readonly class UndoableEvent
 {
     public function __construct(
-        public readonly string $action,
-        public readonly UndoableEventData $data
+        public string $action,
+        public UndoableEventData $data
     ) {}
 
     public static function fromJson(string $json): self

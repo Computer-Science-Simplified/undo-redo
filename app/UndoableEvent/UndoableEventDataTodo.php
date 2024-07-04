@@ -2,11 +2,11 @@
 
 namespace App\UndoableEvent;
 
-class UndoableEventDataTodo
+readonly class UndoableEventDataTodo
 {
     public function __construct(
-        public readonly ?array $before,
-        public readonly ?array $after
+        public ?array $before,
+        public ?array $after
     ) {}
 
     public static function fromArray(array $data): self
