@@ -2,7 +2,7 @@
 
 namespace App\Stacks;
 
-use App\DataTransferObjects\UndoableEvent\Event;
+use App\DataTransferObjects\Event\Event;
 use App\Models\User;
 
 interface Stack

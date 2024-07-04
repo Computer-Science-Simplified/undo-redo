@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\UndoableEvent;
+namespace App\DataTransferObjects\Event;
 
 readonly class EventDataTodo
 {

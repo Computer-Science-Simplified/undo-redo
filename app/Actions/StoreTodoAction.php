@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\DataTransferObjects\Todo\StoreTodoData;
-use App\DataTransferObjects\UndoableEvent\Event;
+use App\DataTransferObjects\Event\Event;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;

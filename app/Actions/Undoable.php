@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-use App\DataTransferObjects\UndoableEvent\Event;
+use App\DataTransferObjects\Event\Event;
 use App\Models\Todo;
 use App\Models\User;
 

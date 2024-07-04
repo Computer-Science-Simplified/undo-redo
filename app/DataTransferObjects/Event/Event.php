@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects\UndoableEvent;
+namespace App\DataTransferObjects\Event;
 
 use App\Models\Todo;
 
@@ -10,20 +10,6 @@ readonly class Event
         public string    $action,
         public EventData $data,
     ) {}
-
-    public static function create(string $action, ?Todo $todo): self
-    {
-        return self::fromArray([
-            'action' => $action,
-            'data' => [
-                'todo_id' => $todo->id,
-                'todo' => [
-                    'before' => null,
-                    'after' => $todo->toArray(),
-                ],
-            ],
-        ]);
-    }
 
     public static function fromJson(string $json): self
     {
