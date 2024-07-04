@@ -44,7 +44,6 @@ class StoreTodoAction
 
         $this->redis->lPush('history:todos:' . $todo->id . ':undo:' . $user->id, json_encode([
             'action' => self::class,
-            'command' => 'undo',
             'data' => [
                 'todo_id' => $todo->id,
                 'todo' => [

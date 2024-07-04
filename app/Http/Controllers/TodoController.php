@@ -49,4 +49,23 @@ class TodoController extends Controller
             'data' => $newTodo,
         ], Response::HTTP_OK);
     }
+
+    public function redo(Todo $todo, Request $request)
+    {
+        $event = $this->redis->lPop('history:todos:' . $todo->id . ':undo:' . $request->user()->id);
+
+        if (!$event) {
+            return response('', Response::HTTP_NOT_FOUND);
+        }
+
+        $event = json_decode($event, true);
+
+        $action = app($event['action']);
+
+        $newTodo = $action->redo($event, $request->user());
+
+        return response([
+            'data' => $newTodo,
+        ], Response::HTTP_OK);
+    }
 }
