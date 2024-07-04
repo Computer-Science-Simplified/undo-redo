@@ -15,7 +15,7 @@ class UpdateDescriptionAction implements Undoable
 
     public function execute(Todo $todo, User $user, string $description): void
     {
-        $oldTodo = json_encode($todo->toArray());
+        $oldTodo = $todo->toArray();
 
         $todo->description = $description;
 
@@ -27,7 +27,7 @@ class UpdateDescriptionAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => json_encode($todo->toArray()),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));
@@ -38,7 +38,7 @@ class UpdateDescriptionAction implements Undoable
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
 
-        $oldTodo = json_encode($todo->toArray());
+        $oldTodo = $todo->toArray();
 
         $todo->update($event->data->todo->before);
 
@@ -48,7 +48,7 @@ class UpdateDescriptionAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => json_encode($todo->toArray()),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));
@@ -61,7 +61,7 @@ class UpdateDescriptionAction implements Undoable
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
 
-        $oldTodo = json_encode($todo->toArray());
+        $oldTodo = $todo->toArray();
 
         $todo->update($event->data->todo->before);
 
@@ -71,7 +71,7 @@ class UpdateDescriptionAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => json_encode($todo->toArray()),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));

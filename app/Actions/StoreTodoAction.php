@@ -26,7 +26,7 @@ class StoreTodoAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => null,
-                    'after' => json_encode($todo->toArray()),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));
@@ -39,7 +39,7 @@ class StoreTodoAction implements Undoable
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
 
-        $oldTodo = json_encode($todo);
+        $oldTodo = $todo->toArray();
 
         $todo->delete();
 
@@ -70,7 +70,7 @@ class StoreTodoAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => null,
-                    'after' => json_encode($todo),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));

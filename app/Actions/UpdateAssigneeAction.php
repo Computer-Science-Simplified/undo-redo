@@ -15,7 +15,7 @@ class UpdateAssigneeAction implements Undoable
 
     public function execute(Todo $todo, User $user, User $assignee): void
     {
-        $oldTodo = json_encode($todo->toArray());
+        $oldTodo = $todo->toArray();
 
         $todo->assignee_id = $assignee->id;
 
@@ -27,7 +27,7 @@ class UpdateAssigneeAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => json_encode($todo->toArray()),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));
@@ -38,7 +38,7 @@ class UpdateAssigneeAction implements Undoable
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
 
-        $oldTodo = json_encode($todo->toArray());
+        $oldTodo = $todo->toArray();
 
         $todo->update($event->data->todo->before);
 
@@ -49,7 +49,7 @@ class UpdateAssigneeAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => json_encode($todo->toArray()),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));
@@ -62,7 +62,7 @@ class UpdateAssigneeAction implements Undoable
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
 
-        $oldTodo = json_encode($todo->toArray());
+        $oldTodo = $todo->toArray();
 
         $todo->update($event->data->todo->before);
 
@@ -72,7 +72,7 @@ class UpdateAssigneeAction implements Undoable
                 'todo_id' => $todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => json_encode($todo->toArray()),
+                    'after' => $todo->toArray(),
                 ],
             ],
         ]));
