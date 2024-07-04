@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\StoreTodoAction;
+use App\Actions\UpdateAssigneeAction;
 use App\Actions\UpdateDescriptionAction;
 use App\Models\Todo;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Redis;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +29,15 @@ class TodoController extends Controller
     public function updateDescription(Request $request, Todo $todo, UpdateDescriptionAction $action)
     {
         $action->execute($todo, $request->user(), $request->description);
+
+        return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    public function updateAssignee(Request $request, Todo $todo, UpdateAssigneeAction $action)
+    {
+        $assignee = User::findOrFail($request->assignee_id);
+
+        $action->execute($todo, $request->user(), $assignee);
 
         return response('', Response::HTTP_NO_CONTENT);
     }

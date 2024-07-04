@@ -6,17 +6,17 @@ use App\Models\Todo;
 use App\Models\User;
 use Redis;
 
-class UpdateDescriptionAction
+class UpdateAssigneeAction
 {
     public function __construct(private Redis $redis)
     {
     }
 
-    public function execute(Todo $todo, User $user, string $description): void
+    public function execute(Todo $todo, User $user, User $assignee): void
     {
         $oldTodo = json_encode($todo->toArray());
 
-        $todo->description = $description;
+        $todo->assignee_id = $assignee->id;
 
         $todo->save();
 
@@ -43,6 +43,7 @@ class UpdateDescriptionAction
 
         $this->redis->lPush('history:todos:' . $todo->id . ':undo:' . $user->id, json_encode([
             'action' => self::class,
+            'command' => 'undo',
             'data' => [
                 'todo_id' => $todo->id,
                 'todo' => [
