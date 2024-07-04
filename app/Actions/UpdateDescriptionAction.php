@@ -4,14 +4,16 @@ namespace App\Actions;
 
 use App\Models\Todo;
 use App\Models\User;
+use App\Stacks\HistoryStack;
+use App\Stacks\UndoStack;
 use App\UndoableEvent\UndoableEvent;
-use Redis;
 
 class UpdateDescriptionAction implements Undoable
 {
-    public function __construct(private Redis $redis)
-    {
-    }
+    public function __construct(
+        private HistoryStack $historyStack,
+        private UndoStack $undoStack
+    ) {}
 
     public function execute(Todo $todo, User $user, string $description): void
     {
@@ -21,7 +23,7 @@ class UpdateDescriptionAction implements Undoable
 
         $todo->save();
 
-        $this->redis->lPush('history:todos:' . $todo->id . ':' . $user->id, json_encode([
+        $event = UndoableEvent::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -30,7 +32,9 @@ class UpdateDescriptionAction implements Undoable
                     'after' => $todo->toArray(),
                 ],
             ],
-        ]));
+        ]);
+
+        $this->historyStack->push($event, $user);
     }
 
     public function undo(UndoableEvent $event, User $user): ?Todo
@@ -42,7 +46,7 @@ class UpdateDescriptionAction implements Undoable
 
         $todo->update($event->data->todo->before);
 
-        $this->redis->lPush('history:todos:' . $todo->id . ':undo:' . $user->id, json_encode([
+        $event = UndoableEvent::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -51,7 +55,9 @@ class UpdateDescriptionAction implements Undoable
                     'after' => $todo->toArray(),
                 ],
             ],
-        ]));
+        ]);
+
+        $this->undoStack->push($event, $user);
 
         return $todo;
     }
@@ -65,7 +71,7 @@ class UpdateDescriptionAction implements Undoable
 
         $todo->update($event->data->todo->before);
 
-        $this->redis->lPush('history:todos:' . $todo->id . ':' . $user->id, json_encode([
+        $event = UndoableEvent::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -74,7 +80,9 @@ class UpdateDescriptionAction implements Undoable
                     'after' => $todo->toArray(),
                 ],
             ],
-        ]));
+        ]);
+
+        $this->historyStack->push($event, $user);
 
         return $todo;
     }
