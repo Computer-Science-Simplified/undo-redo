@@ -43,7 +43,7 @@ class TodoController extends Controller
 
         $action = app($event['action']);
 
-        $newTodo = $action->undo($event);
+        $newTodo = $action->undo($event, $request->user());
 
         return response([
             'data' => $newTodo,
