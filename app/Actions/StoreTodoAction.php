@@ -2,12 +2,12 @@
 
 namespace App\Actions;
 
-use App\DataTransferObjects\StoreTodoData;
+use App\DataTransferObjects\Todo\StoreTodoData;
+use App\DataTransferObjects\UndoableEvent\UndoableEvent;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;
 use App\Stacks\UndoStack;
-use App\UndoableEvent\UndoableEvent;
 
 class StoreTodoAction implements Undoable
 {

@@ -2,12 +2,10 @@
 
 namespace App\Stacks;
 
-use App\Models\Todo;
+use App\DataTransferObjects\UndoableEvent\UndoableEvent;
 use App\Models\User;
-use App\UndoableEvent\UndoableEvent;
 use InvalidArgumentException;
 use Redis;
-use Symfony\Component\HttpFoundation\Response;
 
 class HistoryStack implements Stack
 {

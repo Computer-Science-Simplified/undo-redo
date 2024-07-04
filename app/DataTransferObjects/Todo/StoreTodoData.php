@@ -1,24 +1,21 @@
 <?php
 
-namespace App\DataTransferObjects;
+namespace App\DataTransferObjects\Todo;
 
-use App\Models\Todo;
 use App\Models\User;
 
-readonly class UpdateAssigneeData
+readonly class StoreTodoData
 {
     public function __construct(
-        public Todo $todo,
+        public string $title,
         public User $user,
-        public User $assignee,
     ) {}
 
     public static function from(array $data): self
     {
         return new self(
-            todo: $data['todo'],
+            title: $data['title'],
             user: $data['user'],
-            assignee: $data['assignee'],
         );
     }
 }

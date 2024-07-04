@@ -1,6 +1,6 @@
 <?php
 
-namespace App\UndoableEvent;
+namespace App\DataTransferObjects\UndoableEvent;
 
 use App\Models\Todo;
 

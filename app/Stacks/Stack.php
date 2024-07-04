@@ -2,8 +2,8 @@
 
 namespace App\Stacks;
 
+use App\DataTransferObjects\UndoableEvent\UndoableEvent;
 use App\Models\User;
-use App\UndoableEvent\UndoableEvent;
 
 interface Stack
 {

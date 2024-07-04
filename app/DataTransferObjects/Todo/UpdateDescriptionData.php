@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DataTransferObjects;
+namespace App\DataTransferObjects\Todo;
 
 use App\Models\Todo;
 use App\Models\User;

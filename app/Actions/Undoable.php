@@ -2,9 +2,9 @@
 
 namespace App\Actions;
 
+use App\DataTransferObjects\UndoableEvent\UndoableEvent;
 use App\Models\Todo;
 use App\Models\User;
-use App\UndoableEvent\UndoableEvent;
 
 interface Undoable
 {

@@ -2,12 +2,12 @@
 
 namespace App\Actions;
 
-use App\DataTransferObjects\UpdateDescriptionData;
+use App\DataTransferObjects\Todo\UpdateDescriptionData;
+use App\DataTransferObjects\UndoableEvent\UndoableEvent;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;
 use App\Stacks\UndoStack;
-use App\UndoableEvent\UndoableEvent;
 
 class UpdateDescriptionAction implements Undoable
 {
