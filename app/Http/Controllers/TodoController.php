@@ -8,6 +8,7 @@ use App\Actions\UpdateAssigneeAction;
 use App\Actions\UpdateDescriptionAction;
 use App\Models\Todo;
 use App\Models\User;
+use App\UndoableEvent\UndoableEvent;
 use Illuminate\Http\Request;
 use Redis;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,16 +46,16 @@ class TodoController extends Controller
 
     public function undo(Request $request, int $todoId)
     {
-        $event = $this->redis->lPop('history:todos:' . $todoId . ':' . $request->user()->id);
+        $eventJson = $this->redis->lPop('history:todos:' . $todoId . ':' . $request->user()->id);
 
-        if (!$event) {
+        if (!$eventJson) {
             return response('', Response::HTTP_NOT_FOUND);
         }
 
-        $event = json_decode($event, true);
+        $event = UndoableEvent::fromJson($eventJson);
 
         /** @var Undoable $action */
-        $action = app($event['action']);
+        $action = app($event->action);
 
         $newTodo = $action->undo($event, $request->user());
 

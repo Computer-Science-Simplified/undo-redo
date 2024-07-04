@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\Todo;
 use App\Models\User;
+use App\UndoableEvent\UndoableEvent;
 use Redis;
 
 class UpdateAssigneeAction implements Undoable
@@ -32,14 +33,14 @@ class UpdateAssigneeAction implements Undoable
         ]));
     }
 
-    public function undo(array $event, User $user): ?Todo
+    public function undo(UndoableEvent $event, User $user): ?Todo
     {
         /** @var Todo $todo */
-        $todo = Todo::findOrFail($event['data']['todo_id']);
+        $todo = Todo::findOrFail($event->data->todo_id);
 
         $oldTodo = json_encode($todo->toArray());
 
-        $todo->update(json_decode($event['data']['todo']['before'], true));
+        $todo->update($event->data->todo->before);
 
         $this->redis->lPush('history:todos:' . $todo->id . ':undo:' . $user->id, json_encode([
             'action' => self::class,

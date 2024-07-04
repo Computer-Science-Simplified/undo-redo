@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\Todo;
 use App\Models\User;
+use App\UndoableEvent\UndoableEvent;
 use Redis;
 
 class StoreTodoAction implements Undoable
@@ -33,10 +34,10 @@ class StoreTodoAction implements Undoable
         return $todo;
     }
 
-    public function undo(array $event, User $user): null
+    public function undo(UndoableEvent $event, User $user): null
     {
         /** @var Todo $todo */
-        $todo = Todo::findOrFail($event['data']['todo_id']);
+        $todo = Todo::findOrFail($event->data->todo_id);
 
         $oldTodo = json_encode($todo);
 
