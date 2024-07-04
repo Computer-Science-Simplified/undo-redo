@@ -28,6 +28,13 @@ class TodoController extends Controller
         ], Response::HTTP_CREATED);
     }
 
+    public function show(Todo $todo)
+    {
+        return response([
+            'data' => $todo,
+        ], Response::HTTP_OK);
+    }
+
     public function updateDescription(Request $request, Todo $todo, UpdateDescriptionAction $action)
     {
         $action->execute($todo, $request->user(), $request->description);
