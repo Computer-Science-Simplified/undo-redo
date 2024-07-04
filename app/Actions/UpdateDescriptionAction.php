@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\DataTransferObjects\Todo\UpdateDescriptionData;
-use App\DataTransferObjects\UndoableEvent\UndoableEvent;
+use App\DataTransferObjects\UndoableEvent\Event;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;
@@ -26,7 +26,7 @@ class UpdateDescriptionAction implements Undoable
 
         $dto->todo->save();
 
-        $event = UndoableEvent::fromArray([
+        $event = Event::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $dto->todo->id,
@@ -42,7 +42,7 @@ class UpdateDescriptionAction implements Undoable
         return $dto->todo;
     }
 
-    public function undo(UndoableEvent $event, User $user): ?Todo
+    public function undo(Event $event, User $user): ?Todo
     {
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
@@ -51,7 +51,7 @@ class UpdateDescriptionAction implements Undoable
 
         $todo->update($event->data->todo->before);
 
-        $event = UndoableEvent::fromArray([
+        $event = Event::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -67,7 +67,7 @@ class UpdateDescriptionAction implements Undoable
         return $todo;
     }
 
-    public function redo(UndoableEvent $event, User $user): ?Todo
+    public function redo(Event $event, User $user): ?Todo
     {
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
@@ -76,7 +76,7 @@ class UpdateDescriptionAction implements Undoable
 
         $todo->update($event->data->todo->before);
 
-        $event = UndoableEvent::fromArray([
+        $event = Event::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,

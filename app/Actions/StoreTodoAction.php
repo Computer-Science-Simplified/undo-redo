@@ -3,7 +3,7 @@
 namespace App\Actions;
 
 use App\DataTransferObjects\Todo\StoreTodoData;
-use App\DataTransferObjects\UndoableEvent\UndoableEvent;
+use App\DataTransferObjects\UndoableEvent\Event;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;
@@ -25,7 +25,7 @@ class StoreTodoAction implements Undoable
             'user_id' => $dto->user->id,
         ]);
 
-        $event = UndoableEvent::fromArray([
+        $event = Event::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -41,7 +41,7 @@ class StoreTodoAction implements Undoable
         return $todo;
     }
 
-    public function undo(UndoableEvent $event, User $user): null
+    public function undo(Event $event, User $user): null
     {
         /** @var Todo $todo */
         $todo = Todo::findOrFail($event->data->todo_id);
@@ -50,7 +50,7 @@ class StoreTodoAction implements Undoable
 
         $todo->delete();
 
-        $event = UndoableEvent::fromArray([
+        $event = Event::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
@@ -66,14 +66,14 @@ class StoreTodoAction implements Undoable
         return null;
     }
 
-    public function redo(UndoableEvent $event, User $user): ?Todo
+    public function redo(Event $event, User $user): ?Todo
     {
         /** @var Todo $todo */
         $todo = Todo::create(
             $event->data->todo->before,
         );
 
-        $event = UndoableEvent::fromArray([
+        $event = Event::fromArray([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,

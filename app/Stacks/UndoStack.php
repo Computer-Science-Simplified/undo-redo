@@ -2,7 +2,7 @@
 
 namespace App\Stacks;
 
-use App\DataTransferObjects\UndoableEvent\UndoableEvent;
+use App\DataTransferObjects\UndoableEvent\Event;
 use App\Models\User;
 use InvalidArgumentException;
 use Redis;
@@ -13,7 +13,7 @@ class UndoStack implements Stack
     {
     }
 
-    public function push(UndoableEvent $event, User $user): void
+    public function push(Event $event, User $user): void
     {
         $this->redis->lPush(
             'history:todos:' . $event->data->todo_id . ':undo:' . $user->id,
@@ -21,7 +21,7 @@ class UndoStack implements Stack
         );
     }
 
-    public function pop(int $todoId, User $user): UndoableEvent
+    public function pop(int $todoId, User $user): Event
     {
         $eventJson = $this->redis->lPop('history:todos:' . $todoId . ':undo:' . $user->id);
 
@@ -29,6 +29,6 @@ class UndoStack implements Stack
             throw new InvalidArgumentException('Not found');
         }
 
-        return UndoableEvent::fromJson($eventJson);
+        return Event::fromJson($eventJson);
     }
 }

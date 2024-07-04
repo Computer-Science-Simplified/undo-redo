@@ -2,7 +2,7 @@
 
 namespace App\DataTransferObjects\UndoableEvent;
 
-readonly class UndoableEventDataTodo
+readonly class EventDataTodo
 {
     public function __construct(
         public ?array $before,

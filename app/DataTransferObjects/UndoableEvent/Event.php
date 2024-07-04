@@ -4,11 +4,11 @@ namespace App\DataTransferObjects\UndoableEvent;
 
 use App\Models\Todo;
 
-readonly class UndoableEvent
+readonly class Event
 {
     public function __construct(
-        public string $action,
-        public UndoableEventData $data,
+        public string    $action,
+        public EventData $data,
     ) {}
 
     public static function create(string $action, ?Todo $todo): self
@@ -36,7 +36,7 @@ readonly class UndoableEvent
     {
         return new self(
             action: $data['action'],
-            data: UndoableEventData::fromArray($data['data']),
+            data: EventData::fromArray($data['data']),
         );
     }
 }
