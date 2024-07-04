@@ -16,6 +16,7 @@ class TodoFactory extends Factory
             'title' => $this->faker->words(3, true),
             'description' => $this->faker->sentences(5, true),
             'user_id' => User::factory(),
+            'assignee_id' => User::factory(),
             'due_at' => now()->subDays(rand(-10, 30)),
         ];
     }

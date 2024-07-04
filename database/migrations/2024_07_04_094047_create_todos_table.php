@@ -12,9 +12,10 @@ return new class extends Migration
         Schema::create('todos', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('description');
-            $table->foreignIdFor(User::class)->nullable()->constrained();
-            $table->dateTime('due_at');
+            $table->text('description')->nullable();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignId('assignee_id')->nullable()->references('id')->on('users');
+            $table->dateTime('due_at')->nullable();
             $table->timestamps();
         });
     }
