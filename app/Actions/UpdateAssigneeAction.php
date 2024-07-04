@@ -6,7 +6,7 @@ use App\Models\Todo;
 use App\Models\User;
 use Redis;
 
-class UpdateAssigneeAction
+class UpdateAssigneeAction implements Undoable
 {
     public function __construct(private Redis $redis)
     {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\StoreTodoAction;
+use App\Actions\Undoable;
 use App\Actions\UpdateAssigneeAction;
 use App\Actions\UpdateDescriptionAction;
 use App\Models\Todo;
@@ -52,6 +53,7 @@ class TodoController extends Controller
 
         $event = json_decode($event, true);
 
+        /** @var Undoable $action */
         $action = app($event['action']);
 
         $newTodo = $action->undo($event, $request->user());
@@ -71,6 +73,7 @@ class TodoController extends Controller
 
         $event = json_decode($event, true);
 
+        /** @var Undoable $action */
         $action = app($event['action']);
 
         $newTodo = $action->redo($event, $request->user());
