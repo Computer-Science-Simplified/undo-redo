@@ -2,12 +2,28 @@
 
 namespace App\UndoableEvent;
 
+use App\Models\Todo;
+
 readonly class UndoableEvent
 {
     public function __construct(
         public string $action,
         public UndoableEventData $data,
     ) {}
+
+    public static function create(string $action, ?Todo $todo): self
+    {
+        return self::fromArray([
+            'action' => $action,
+            'data' => [
+                'todo_id' => $todo->id,
+                'todo' => [
+                    'before' => null,
+                    'after' => $todo->toArray(),
+                ],
+            ],
+        ]);
+    }
 
     public static function fromJson(string $json): self
     {

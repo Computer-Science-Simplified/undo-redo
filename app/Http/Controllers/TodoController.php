@@ -8,14 +8,14 @@ use App\Actions\UpdateAssigneeAction;
 use App\Actions\UpdateDescriptionAction;
 use App\Models\Todo;
 use App\Models\User;
-use App\UndoableEvent\UndoableEvent;
+use App\Stacks\HistoryStack;
+use App\Stacks\UndoStack;
 use Illuminate\Http\Request;
-use Redis;
 use Symfony\Component\HttpFoundation\Response;
 
 class TodoController extends Controller
 {
-    public function __construct(private Redis $redis)
+    public function __construct(private HistoryStack $historyStack, private UndoStack $undoStack)
     {
     }
 
@@ -46,13 +46,7 @@ class TodoController extends Controller
 
     public function undo(Request $request, int $todoId)
     {
-        $eventJson = $this->redis->lPop('history:todos:' . $todoId . ':' . $request->user()->id);
-
-        if (!$eventJson) {
-            return response('', Response::HTTP_NOT_FOUND);
-        }
-
-        $event = UndoableEvent::fromJson($eventJson);
+        $event = $this->historyStack->pop($todoId, $request->user());
 
         /** @var Undoable $action */
         $action = app($event->action);
@@ -66,13 +60,7 @@ class TodoController extends Controller
 
     public function redo(Request $request, int $todoId)
     {
-        $eventJson = $this->redis->lPop('history:todos:' . $todoId . ':undo:' . $request->user()->id);
-
-        if (!$eventJson) {
-            return response('', Response::HTTP_NOT_FOUND);
-        }
-
-        $event = UndoableEvent::fromJson($eventJson);
+        $event = $this->undoStack->pop($todoId, $request->user());
 
         /** @var Undoable $action */
         $action = app($event->action);
