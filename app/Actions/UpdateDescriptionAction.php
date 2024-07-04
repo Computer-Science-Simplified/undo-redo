@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\DataTransferObjects\UpdateDescriptionData;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;
@@ -15,26 +16,30 @@ class UpdateDescriptionAction implements Undoable
         private UndoStack $undoStack
     ) {}
 
-    public function execute(Todo $todo, User $user, string $description): void
+    public function execute(array $data): Todo
     {
-        $oldTodo = $todo->toArray();
+        $dto = UpdateDescriptionData::from($data);
 
-        $todo->description = $description;
+        $oldTodo = $dto->todo->toArray();
 
-        $todo->save();
+        $dto->todo->description = $dto->description;
+
+        $dto->todo->save();
 
         $event = UndoableEvent::fromArray([
             'action' => self::class,
             'data' => [
-                'todo_id' => $todo->id,
+                'todo_id' => $dto->todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => $todo->toArray(),
+                    'after' => $dto->todo->toArray(),
                 ],
             ],
         ]);
 
-        $this->historyStack->push($event, $user);
+        $this->historyStack->push($event, $dto->user);
+
+        return $dto->todo;
     }
 
     public function undo(UndoableEvent $event, User $user): ?Todo

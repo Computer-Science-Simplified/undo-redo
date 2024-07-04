@@ -21,7 +21,10 @@ class TodoController extends Controller
 
     public function store(Request $request, StoreTodoAction $action)
     {
-        $todo = $action->execute($request->title, $request->user());
+        $todo = $action->execute([
+            ...$request->all(),
+            'user' => $request->user(),
+        ]);
 
         return response([
             'data' => $todo,
@@ -37,7 +40,11 @@ class TodoController extends Controller
 
     public function updateDescription(Request $request, Todo $todo, UpdateDescriptionAction $action)
     {
-        $action->execute($todo, $request->user(), $request->description);
+        $action->execute([
+            ...$request->all(),
+            'user' => $request->user(),
+            'todo' => $todo
+        ]);
 
         return response('', Response::HTTP_NO_CONTENT);
     }
@@ -46,7 +53,11 @@ class TodoController extends Controller
     {
         $assignee = User::findOrFail($request->assignee_id);
 
-        $action->execute($todo, $request->user(), $assignee);
+        $action->execute([
+            'assignee' => $assignee,
+            'user' => $request->user(),
+            'todo' => $todo,
+        ]);
 
         return response('', Response::HTTP_NO_CONTENT);
     }

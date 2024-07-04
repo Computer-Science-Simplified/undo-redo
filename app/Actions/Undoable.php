@@ -8,6 +8,8 @@ use App\UndoableEvent\UndoableEvent;
 
 interface Undoable
 {
+    public function execute(array $data): ?Todo;
+
     public function undo(UndoableEvent $event, User $user): ?Todo;
 
     public function redo(UndoableEvent $event, User $user): ?Todo;

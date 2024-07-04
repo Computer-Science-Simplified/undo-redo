@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\DataTransferObjects\UpdateAssigneeData;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;
@@ -15,26 +16,30 @@ class UpdateAssigneeAction implements Undoable
         private UndoStack $undoStack,
     ) {}
 
-    public function execute(Todo $todo, User $user, User $assignee): void
+    public function execute(array $data): Todo
     {
-        $oldTodo = $todo->toArray();
+        $dto = UpdateAssigneeData::from($data);
 
-        $todo->assignee_id = $assignee->id;
+        $oldTodo = $dto->todo->toArray();
 
-        $todo->save();
+        $dto->todo->assignee_id = $dto->assignee->id;
+
+        $dto->todo->save();
 
         $event = UndoableEvent::fromArray([
             'action' => self::class,
             'data' => [
-                'todo_id' => $todo->id,
+                'todo_id' => $dto->todo->id,
                 'todo' => [
                     'before' => $oldTodo,
-                    'after' => $todo->toArray(),
+                    'after' => $dto->todo->toArray(),
                 ],
             ],
         ]);
 
-        $this->historyStack->push($event, $user);
+        $this->historyStack->push($event, $dto->user);
+
+        return $dto->todo;
     }
 
     public function undo(UndoableEvent $event, User $user): ?Todo

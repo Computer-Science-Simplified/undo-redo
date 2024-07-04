@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\DataTransferObjects\StoreTodoData;
 use App\Models\Todo;
 use App\Models\User;
 use App\Stacks\HistoryStack;
@@ -15,11 +16,13 @@ class StoreTodoAction implements Undoable
         private UndoStack $undoStack,
     ) {}
 
-    public function execute(string $title, User $user): Todo
+    public function execute(array $data): Todo
     {
+        $dto = StoreTodoData::from($data);
+
         $todo = Todo::create([
-            'title' => $title,
-            'user_id' => $user->id,
+            'title' => $dto->title,
+            'user_id' => $dto->user->id,
         ]);
 
         $event = UndoableEvent::fromArray([
@@ -33,7 +36,7 @@ class StoreTodoAction implements Undoable
             ],
         ]);
 
-        $this->historyStack->push($event, $user);
+        $this->historyStack->push($event, $dto->user);
 
         return $todo;
     }
