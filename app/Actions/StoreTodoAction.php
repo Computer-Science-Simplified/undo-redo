@@ -55,4 +55,25 @@ class StoreTodoAction
 
         return null;
     }
+
+    public function redo(array $event, User $user): ?Todo
+    {
+        /** @var Todo $todo */
+        $todo = Todo::create(
+            json_decode($event['data']['todo']['before'], true),
+        );
+
+        $this->redis->lPush('history:todos:' . $todo->id . ':undo:' . $user->id, json_encode([
+            'action' => self::class,
+            'data' => [
+                'todo_id' => $todo->id,
+                'todo' => [
+                    'before' => null,
+                    'after' => json_encode($todo),
+                ],
+            ],
+        ]));
+
+        return $todo;
+    }
 }

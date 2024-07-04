@@ -42,9 +42,9 @@ class TodoController extends Controller
         return response('', Response::HTTP_NO_CONTENT);
     }
 
-    public function undo(Request $request, Todo $todo)
+    public function undo(Request $request, int $todoId)
     {
-        $event = $this->redis->lPop('history:todos:' . $todo->id . ':' . $request->user()->id);
+        $event = $this->redis->lPop('history:todos:' . $todoId . ':' . $request->user()->id);
 
         if (!$event) {
             return response('', Response::HTTP_NOT_FOUND);
@@ -61,9 +61,9 @@ class TodoController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function redo(Todo $todo, Request $request)
+    public function redo(Request $request, int $todoId)
     {
-        $event = $this->redis->lPop('history:todos:' . $todo->id . ':undo:' . $request->user()->id);
+        $event = $this->redis->lPop('history:todos:' . $todoId . ':undo:' . $request->user()->id);
 
         if (!$event) {
             return response('', Response::HTTP_NOT_FOUND);
