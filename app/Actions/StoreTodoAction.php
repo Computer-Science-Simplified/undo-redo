@@ -64,7 +64,7 @@ class StoreTodoAction implements Undoable
             $event->data->todo->before,
         );
 
-        $this->redis->lPush('history:todos:' . $todo->id . ':undo:' . $user->id, json_encode([
+        $this->redis->lPush('history:todos:' . $todo->id . ':' . $user->id, json_encode([
             'action' => self::class,
             'data' => [
                 'todo_id' => $todo->id,
