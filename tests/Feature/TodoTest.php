@@ -21,76 +21,6 @@ class TodoTest extends TestCase
     }
 
     #[Test]
-    public function it_should_undo_and_redo_description_changes()
-    {
-        $user = User::factory()->create();
-
-        $this->actingAs($user);
-
-        $todo = $this->createTodo('Test Todo');
-
-        $this->updateDescription($todo, 'Test description');
-
-        $todo = $this->getTodo($todo);
-
-        $this->assertSame('Test description', $todo['description']);
-
-        $this->undo($todo);
-
-        $todo = $this->getTodo($todo);
-
-        $this->assertNull($todo['description']);
-
-        $this->redo($todo);
-
-        $todo = $this->getTodo($todo);
-
-        $this->assertSame('Test description', $todo['description']);
-
-        $this->undo($todo);
-
-        $this->undo($todo);
-
-        $this->assertTodoMissing($todo);
-    }
-
-    #[Test]
-    public function it_should_undo_and_redo_assignee_changes()
-    {
-        $user = User::factory()->create();
-
-        $assignee = User::factory()->create();
-
-        $this->actingAs($user);
-
-        $todo = $this->createTodo('Test Todo');
-
-        $this->updateAssignee($todo, $assignee);
-
-        $todo = $this->getTodo($todo);
-
-        $this->assertSame($assignee->id, $todo['assignee_id']);
-
-        $this->undo($todo);
-
-        $todo = $this->getTodo($todo);
-
-        $this->assertNull($todo['assignee_id']);
-
-        $this->redo($todo);
-
-        $todo = $this->getTodo($todo);
-
-        $this->assertSame($assignee->id, $todo['assignee_id']);
-
-        $this->undo($todo);
-
-        $this->undo($todo);
-
-        $this->assertTodoMissing($todo);
-    }
-
-    #[Test]
     public function it_should_undo_and_redo_creating_a_todo()
     {
         $user = User::factory()->create();
@@ -98,20 +28,91 @@ class TodoTest extends TestCase
         $this->actingAs($user);
 
         $todo = $this->createTodo('Test Todo');
-
         $todo = $this->getTodo($todo);
-
         $this->assertSame('Test Todo', $todo['title']);
 
         $this->undo($todo);
-
         $this->assertTodoMissing($todo);
 
         $this->redo($todo);
-
         $todo = $this->getTodo($todo);
-
         $this->assertSame('Test Todo', $todo['title']);
+    }
+
+    #[Test]
+    public function it_should_not_stuck_in_an_infinite_state()
+    {
+        /**
+         * Bug: when undoing an action the event always stays at the top of the stack, so it's stuck
+         */
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $todo = $this->createTodo('Test Todo');
+        $todo = $this->getTodo($todo);
+        $this->assertSame('Test Todo', $todo['title']);
+
+        $this->updateDescription($todo, 'Test description');
+        $todo = $this->getTodo($todo);
+        $this->assertSame('Test description', $todo['description']);
+
+        $this->undo($todo);
+        $todo = $this->getTodo($todo);
+        $this->assertNull($todo['description']);
+
+        $this->undo($todo);
+        $this->assertTodoMissing($todo);
+    }
+
+    #[Test]
+    public function it_should_undo_and_redo_description_changes()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $todo = $this->createTodo('Test Todo');
+
+        $this->updateDescription($todo, 'Test description');
+        $todo = $this->getTodo($todo);
+        $this->assertSame('Test description', $todo['description']);
+
+        $this->undo($todo);
+        $todo = $this->getTodo($todo);
+        $this->assertNull($todo['description']);
+
+        $this->redo($todo);
+        $todo = $this->getTodo($todo);
+        $this->assertSame('Test description', $todo['description']);
+
+        $this->undo($todo);
+        $this->undo($todo);
+        $this->assertTodoMissing($todo);
+    }
+
+    #[Test]
+    public function it_should_undo_and_redo_assignee_changes()
+    {
+        $user = User::factory()->create();
+        $assignee = User::factory()->create();
+        $this->actingAs($user);
+
+        $todo = $this->createTodo('Test Todo');
+
+        $this->updateAssignee($todo, $assignee);
+        $todo = $this->getTodo($todo);
+        $this->assertSame($assignee->id, $todo['assignee_id']);
+
+        $this->undo($todo);
+        $todo = $this->getTodo($todo);
+        $this->assertNull($todo['assignee_id']);
+
+        $this->redo($todo);
+        $todo = $this->getTodo($todo);
+        $this->assertSame($assignee->id, $todo['assignee_id']);
+
+        $this->undo($todo);
+        $this->undo($todo);
+        $this->assertTodoMissing($todo);
     }
 
     private function updateDescription(array $todo, string $description): void
