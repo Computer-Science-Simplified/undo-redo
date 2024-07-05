@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Stacks\HistoryStack;
 use App\Stacks\UndoStack;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class TodoController extends Controller
@@ -64,29 +65,37 @@ class TodoController extends Controller
 
     public function undo(Request $request, int $todoId)
     {
-        $event = $this->historyStack->pop($todoId, $request->user());
+        DB::transaction(function () use ($todoId, $request) {
+            $event = $this->historyStack->peek($todoId, $request->user());
 
-        /** @var Undoable $action */
-        $action = app($event->action);
+            /** @var Undoable $action */
+            $action = app($event->action);
 
-        $data = $action->undo($event, $request->user());
+            $data = $action->undo($event, $request->user());
 
-        return response([
-            'data' => $data,
-        ], Response::HTTP_OK);
+            $this->historyStack->pop($todoId, $request->user());
+
+            return response([
+                'data' => $data,
+            ], Response::HTTP_OK);
+        });
     }
 
     public function redo(Request $request, int $todoId)
     {
-        $event = $this->undoStack->pop($todoId, $request->user());
+        DB::transaction(function () use ($todoId, $request) {
+            $event = $this->undoStack->peek($todoId, $request->user());
 
-        /** @var Undoable $action */
-        $action = app($event->action);
+            /** @var Undoable $action */
+            $action = app($event->action);
 
-        $data = $action->redo($event, $request->user());
+            $data = $action->redo($event, $request->user());
 
-        return response([
-            'data' => $data,
-        ], Response::HTTP_OK);
+            $this->undoStack->pop($todoId, $request->user());
+
+            return response([
+                'data' => $data,
+            ], Response::HTTP_OK);
+        });
     }
 }

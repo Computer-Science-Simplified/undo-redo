@@ -31,4 +31,15 @@ class HistoryStack implements Stack
 
         return Event::fromJson($eventJson);
     }
+
+    public function peek(int $todoId, User $user): Event
+    {
+        $eventJson = $this->redis->lIndex('history:todos:' . $todoId . ':' . $user->id, 0);
+
+        if (!$eventJson) {
+            throw new InvalidArgumentException('Not found');
+        }
+
+        return Event::fromJson($eventJson);
+    }
 }
