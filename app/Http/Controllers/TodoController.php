@@ -69,10 +69,10 @@ class TodoController extends Controller
         /** @var Undoable $action */
         $action = app($event->action);
 
-        $newTodo = $action->undo($event, $request->user());
+        $data = $action->undo($event, $request->user());
 
         return response([
-            'data' => $newTodo,
+            'data' => $data,
         ], Response::HTTP_OK);
     }
 
@@ -83,10 +83,10 @@ class TodoController extends Controller
         /** @var Undoable $action */
         $action = app($event->action);
 
-        $newTodo = $action->redo($event, $request->user());
+        $data = $action->redo($event, $request->user());
 
         return response([
-            'data' => $newTodo,
+            'data' => $data,
         ], Response::HTTP_OK);
     }
 }
